@@ -108,6 +108,10 @@ macro_rules! reply_markup {
         $crate::InlineKeyboardMarkup::from(vec![$(reply_markup![_inline_keyboard_row, $($content)*]), *])
     );
 
+    (login_url, $([$($content:tt)*]), *) => (
+        $crate::InlineKeyboardMarkup::from(vec![$(reply_markup![_inline_keyboard_row, $($content)*]), *])
+    );
+
     (_inline_keyboard_row, ($($acc:tt)*); $text:tt $request:tt $callback:tt) => (
         vec![$($acc)* reply_markup!(_inline_keyboard_button, $request,  $text, $callback)]
     );
@@ -247,5 +251,16 @@ mod tests {
             markup,
             reply_markup!(inline_keyboard, [], ["foo" callback "bar", "baz" callback "quux"])
         );
+
+        let mut markup = InlineKeyboardMarkup::new();
+        markup.add_row(vec![InlineKeyboardButton::login_url("Войти", LoginUrl {
+            url: String::from("https://google.com"),
+            forward_text: None,
+            bot_username: None,
+            request_write_access: None,
+        })]);
+
+        // TODO: write tests for login_url
+        // assert_eq!(markup, reply_markup!(login_url, []))
     }
 }
