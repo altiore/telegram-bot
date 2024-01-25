@@ -228,8 +228,8 @@ impl Message {
             Chat::Private(x) => MessageChat::Private(x),
             Chat::Group(x) => MessageChat::Group(x),
             Chat::Supergroup(x) => MessageChat::Supergroup(x),
+            Chat::Channel(x) => MessageChat::Channel(x),
             Chat::Unknown(x) => MessageChat::Unknown(x),
-            Chat::Channel(_) => return Err(format!("Channel chat in Message")),
         };
 
         let reply_to_message = raw.reply_to_message.clone();
