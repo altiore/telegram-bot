@@ -5,9 +5,10 @@ use serde::Deserialize;
 pub struct InlineQuery {
     pub id: InlineQueryId,
     pub from: User,
-    pub location: Option<Location>,
+    pub chat_type: String,
     pub query: String,
     pub offset: String,
+    pub location: Option<Location>,
 }
 
 impl Into<InlineQueryId> for InlineQuery {

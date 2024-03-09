@@ -42,6 +42,13 @@ where
 
     fn deserialize(resp: HttpResponse) -> Result<Self::Type, Error> {
         if let Some(body) = resp.body.as_ref() {
+
+            let show_body = false;
+            let b = String::from_utf8(body.clone()).unwrap();
+            if b != "{\"ok\":true,\"result\":[]}" && show_body {
+                println!("Body: {:#?}", b);
+            }
+
             let raw = serde_json::from_slice(body).map_err(ErrorKind::from)?;
             match raw {
                 ResponseWrapper::Success { result } => Ok(<Self as JsonResponse>::map(result)),
