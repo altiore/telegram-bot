@@ -42,7 +42,6 @@ where
 
     fn deserialize(resp: HttpResponse) -> Result<Self::Type, Error> {
         if let Some(body) = resp.body.as_ref() {
-
             let show_body = false;
             let b = String::from_utf8(body.clone()).unwrap();
             if b != "{\"ok\":true,\"result\":[]}" && show_body {

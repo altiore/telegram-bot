@@ -32,14 +32,16 @@ async fn test_reply(api: Api, message: Message) -> Result<(), Error> {
     api.send(message.text_reply("Reply to message")).await?;
     api.send(message.chat.text("Text to message chat")).await?;
 
-    api.send(message.from.as_ref().unwrap().text("Private text")).await?;
+    api.send(message.from.as_ref().unwrap().text("Private text"))
+        .await?;
     Ok(())
 }
 
 async fn test_forward(api: Api, message: Message) -> Result<(), Error> {
     api.send(message.forward(&message.chat)).await?;
 
-    api.send(message.forward(&message.from.as_ref().unwrap())).await?;
+    api.send(message.forward(&message.from.as_ref().unwrap()))
+        .await?;
     Ok(())
 }
 
@@ -82,7 +84,9 @@ async fn test_get_chat_members_count(api: Api, message: Message) -> Result<(), E
 }
 
 async fn test_get_chat_member(api: Api, message: Message) -> Result<(), Error> {
-    let member = api.send(message.chat.get_member(&message.from.clone().unwrap())).await?;
+    let member = api
+        .send(message.chat.get_member(&message.from.clone().unwrap()))
+        .await?;
     let first_name = member.user.first_name.clone();
     let status = member.status;
     api.send(message.text_reply(format!("Member {}, status {:?}", first_name, status)))
@@ -91,7 +95,9 @@ async fn test_get_chat_member(api: Api, message: Message) -> Result<(), Error> {
 }
 
 async fn test_get_user_profile_photos(api: Api, message: Message) -> Result<(), Error> {
-    let photos = api.send(message.from.as_ref().unwrap().get_user_profile_photos()).await?;
+    let photos = api
+        .send(message.from.as_ref().unwrap().get_user_profile_photos())
+        .await?;
 
     api.send(message.text_reply(format!("Found photos: {}", photos.total_count)))
         .await?;

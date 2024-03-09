@@ -21,7 +21,8 @@ async fn main() -> Result<(), Error> {
                 // Answer message with "Hi".
                 api.send(message.text_reply(format!(
                     "Hi, {}! You just wrote '{}'",
-                    &message.from.as_ref().unwrap().first_name, data
+                    &message.from.as_ref().unwrap().first_name,
+                    data
                 )))
                 .await?;
             }

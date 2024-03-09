@@ -40,6 +40,8 @@ make_test!(migrate_to_chat_id, |update: Update| {
 });
 
 make_test!(inline_query, |update: Update| {
+    println!("Update {:#?}", update);
+
     if let UpdateKind::InlineQuery(_query) = update.kind {
         return ();
     }

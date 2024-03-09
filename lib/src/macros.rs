@@ -267,13 +267,19 @@ mod tests {
         );
 
         let mut markup = InlineKeyboardMarkup::new();
-        markup.add_row(vec![InlineKeyboardButton::login_url("Войти", LoginUrl {
-            url: String::from("https://google.com"),
-            forward_text: None,
-            bot_username: None,
-            request_write_access: None,
-        })]);
+        markup.add_row(vec![InlineKeyboardButton::login_url(
+            "Войти",
+            LoginUrl {
+                url: String::from("https://google.com"),
+                forward_text: None,
+                bot_username: None,
+                request_write_access: None,
+            },
+        )]);
 
-        assert_eq!(markup, reply_markup!(login_url, "Войти", "https://google.com"));
+        assert_eq!(
+            markup,
+            reply_markup!(login_url, "Войти", "https://google.com")
+        );
     }
 }

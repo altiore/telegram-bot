@@ -10,6 +10,7 @@
       "is_bot": false
     },
     "query": "user query",
-    "offset": "0"
+    "offset": "0",
+    "chat_type": "supergroup"
   }
 }

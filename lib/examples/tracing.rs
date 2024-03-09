@@ -23,7 +23,8 @@ async fn main() -> Result<(), Error> {
             if let MessageKind::Text { ref data, .. } = message.kind {
                 api.send(message.text_reply(format!(
                     "Hi, {}! You just wrote '{}'",
-                    &message.from.as_ref().unwrap().first_name, data
+                    &message.from.as_ref().unwrap().first_name,
+                    data
                 )))
                 .await?;
             }

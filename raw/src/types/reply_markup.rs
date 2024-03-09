@@ -277,9 +277,7 @@ impl InlineKeyboardButton {
     pub fn login_url<T: AsRef<str>>(text: T, login_url_data: LoginUrl) -> Self {
         Self {
             text: text.as_ref().to_string(),
-            kind: InlineKeyboardButtonKind::LoginUrl(
-                login_url_data,
-            ),
+            kind: InlineKeyboardButtonKind::LoginUrl(login_url_data),
         }
     }
 }
