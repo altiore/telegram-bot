@@ -29,6 +29,15 @@ impl From<ErrorKind> for Error {
     }
 }
 
+impl From<String> for Error {
+    fn from(description: String) -> Self {
+        Error(ErrorKind::TelegramError {
+            description,
+            parameters: None,
+        })
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.0 {

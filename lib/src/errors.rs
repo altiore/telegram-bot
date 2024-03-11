@@ -43,6 +43,12 @@ impl From<ErrorKind> for Error {
     }
 }
 
+impl From<String> for Error {
+    fn from(value: String) -> Self {
+        Error(ErrorKind::Raw(telegram_bot_raw::Error::from(value)))
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.0 {
