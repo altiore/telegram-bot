@@ -11,6 +11,8 @@ pub struct ForwardMessage {
     from_chat_id: ChatRef,
     #[serde(skip_serializing_if = "Not::not")]
     disable_notification: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    protect_content: Option<bool>,
     message_id: MessageId,
 }
 
@@ -34,12 +36,32 @@ impl ForwardMessage {
             chat_id: to.to_chat_ref(),
             from_chat_id: from.to_chat_ref(),
             disable_notification: false,
+            protect_content: None,
+            message_id: message.to_message_id(),
+        }
+    }
+
+    pub fn resend<M, C>(message: M, chat: C) -> Self
+    where
+        M: ToMessageId,
+        C: ToChatRef,
+    {
+        ForwardMessage {
+            chat_id: chat.to_chat_ref(),
+            from_chat_id: chat.to_chat_ref(),
+            disable_notification: false,
+            protect_content: Some(true),
             message_id: message.to_message_id(),
         }
     }
 
     pub fn disable_notification(&mut self) -> &mut Self {
         self.disable_notification = true;
+        self
+    }
+
+    pub fn protect_content(&mut self) -> &mut Self {
+        self.protect_content = Some(true);
         self
     }
 }

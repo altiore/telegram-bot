@@ -10,6 +10,12 @@ pub enum MessageOrChannelPost {
     ChannelPost(ChannelPost),
 }
 
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
+pub struct MessageIdRes {
+    /// New copied message id
+    pub message_id: MessageId,
+}
+
 /// This object represents a chat message.
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct Message {
@@ -368,12 +374,37 @@ impl Message {
     }
 }
 
+impl MessageIdRes {
+    fn from_raw_message(raw: RawMessageIdRes) -> Result<Self, String> {
+        Ok(MessageIdRes {
+            message_id: MessageId::new(raw.message_id),
+        })
+    }
+}
+
 impl<'de> Deserialize<'de> for Message {
     fn deserialize<D>(deserializer: D) -> Result<Message, D::Error>
     where
         D: Deserializer<'de>,
     {
         let raw: RawMessage = Deserialize::deserialize(deserializer)?;
+
+        Self::from_raw_message(raw).map_err(|err| D::Error::custom(err))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+pub struct RawMessageIdRes {
+    /// Unique message identifier inside this chat.
+    pub message_id: Integer,
+}
+
+impl<'de> Deserialize<'de> for MessageIdRes {
+    fn deserialize<D>(deserializer: D) -> Result<MessageIdRes, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw: RawMessageIdRes = Deserialize::deserialize(deserializer)?;
 
         Self::from_raw_message(raw).map_err(|err| D::Error::custom(err))
     }
