@@ -86,4 +86,6 @@ pub struct ChatMember {
     pub can_send_other_messages: Option<bool>,
     ///Optional. Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages
     pub can_add_web_page_previews: Option<bool>,
+    ///Optional. Administrators only. True, if the administrator can manage video chats
+    pub can_manage_video_chats: Option<bool>,
 }
