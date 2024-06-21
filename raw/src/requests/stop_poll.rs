@@ -9,6 +9,8 @@ pub struct StopPoll {
     message_id: MessageId,
     #[serde(skip_serializing_if = "Option::is_none")]
     reply_markup: Option<ReplyMarkup>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    business_connection_id: Option<String>,
 }
 
 impl Request for StopPoll {
@@ -30,6 +32,7 @@ impl StopPoll {
             chat_id: chat.to_chat_ref(),
             message_id: message.to_message_id(),
             reply_markup: None,
+            business_connection_id: None,
         }
     }
 
@@ -38,6 +41,14 @@ impl StopPoll {
         R: Into<ReplyMarkup>,
     {
         self.reply_markup = Some(reply_markup.into());
+        self
+    }
+
+    pub fn business_connection_id<R>(&mut self, business_connection_id: R) -> &mut Self
+    where
+        R: Into<String>,
+    {
+        self.business_connection_id = Some(business_connection_id.into());
         self
     }
 }
