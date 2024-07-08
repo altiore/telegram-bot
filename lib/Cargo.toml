@@ -28,6 +28,7 @@ tracing-futures = "0.2"
 multipart = { version = "0.18.0", default-features = false, features = ["client"] }
 
 telegram-bot-raw = { version = "0.9.0", path = "../raw" }
+command = { path = "../command" }
 
 hyper = { version = "0.14", features = ["client", "http1"] }
 hyper-tls = { version = "0.5", optional = true  }

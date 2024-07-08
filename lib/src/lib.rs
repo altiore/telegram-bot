@@ -16,3 +16,5 @@ pub use self::errors::Error;
 pub use prelude::*;
 pub use stream::UpdatesStream;
 pub use types::*;
+
+pub use command::*;
