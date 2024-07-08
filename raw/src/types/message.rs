@@ -104,6 +104,13 @@ pub enum MessageKind {
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text
         entities: Vec<MessageEntity>,
     },
+    /// Text message which is Bot command
+    BotCommand {
+        /// Actual UTF-8 text of the message, 0-4096 characters.
+        cmd_str: String,
+        /// Special entities like usernames, URLs, bot commands, etc. that appear in the text
+        entities: Vec<MessageEntity>,
+    },
     /// Message is an audio file.
     Audio {
         /// Information about the file.
@@ -340,10 +347,27 @@ impl Message {
 
         if let Some(text) = raw.text {
             let entities = raw.entities.unwrap_or_else(Vec::new);
-            return make_message(MessageKind::Text {
-                data: text,
-                entities: entities,
-            });
+
+            return match text.chars().next() {
+                Some(ch) if ch == '/' => {
+                    make_message(MessageKind::BotCommand {
+                        cmd_str: text,
+                        entities,
+                    })
+                }
+                Some(_) => {
+                    make_message(MessageKind::Text {
+                        data: text,
+                        entities,
+                    })
+                }
+                None => {
+                    make_message(MessageKind::Text {
+                        data: text,
+                        entities,
+                    })
+                }
+            }
         }
 
         maybe_field!(audio, Audio);
@@ -519,10 +543,27 @@ impl ChannelPost {
 
         if let Some(text) = raw.text {
             let entities = raw.entities.unwrap_or_else(Vec::new);
-            return make_message(MessageKind::Text {
-                data: text,
-                entities: entities,
-            });
+
+            return match text.chars().next() {
+                Some(ch) if ch == '/' => {
+                    make_message(MessageKind::BotCommand {
+                        cmd_str: text,
+                        entities,
+                    })
+                }
+                Some(_) => {
+                    make_message(MessageKind::Text {
+                        data: text,
+                        entities,
+                    })
+                }
+                None => {
+                    make_message(MessageKind::Text {
+                        data: text,
+                        entities,
+                    })
+                }
+            }
         }
 
         maybe_field!(audio, Audio);

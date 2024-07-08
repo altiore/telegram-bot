@@ -34,6 +34,7 @@ impl MessageText for MessageKind {
     fn text<'a>(&'a self) -> Option<String> {
         match self {
             MessageKind::Text { data, .. } => Some(data.to_owned()),
+            MessageKind::BotCommand { cmd_str, .. } => Some(cmd_str.to_owned()),
             MessageKind::Audio { data } => data.title.to_owned(),
             MessageKind::Document { data, caption } => {
                 caption.clone().or_else(|| data.file_name.clone())
@@ -98,6 +99,7 @@ impl MessageGetFiles for MessageKind {
     fn get_files<'a>(&'a self) -> Option<Vec<GetFile>> {
         match self {
             MessageKind::Text { .. } => None,
+            MessageKind::BotCommand { .. } => None,
             MessageKind::Audio { data } => Some(vec![data.get_file()]),
             MessageKind::Document { data, .. } => {
                 let mut files = vec![data.get_file()];
