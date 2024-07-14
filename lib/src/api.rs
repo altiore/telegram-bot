@@ -175,16 +175,14 @@ impl Api {
         request: HttpRequest,
     ) -> Result<Resp::Type, Error> {
         let request_id = self.0.next_request_id.fetch_add(1, Ordering::Relaxed);
-        let span = tracing::trace_span!("send_http_request", request_id = request_id, name = %request.name());
+        let trace_span = tracing::trace_span!("send_http_request", request_id = request_id, name = %request.name());
+        let warn_span = tracing::warn_span!("send_http_request", request_id = request_id, name = %request.name());
         async {
             tracing::trace!(body = %request.body, "sending request");
             let http_response = self.0.connector.request(&self.0.token, request).await?;
             tracing::trace!(
                 response = %match http_response.body {
-                    Some(ref vec) => match std::str::from_utf8(vec) {
-                        Ok(str) => str,
-                        Err(_) => "<invalid utf-8 string>"
-                    },
+                    Some(ref vec) => std::str::from_utf8(vec).unwrap_or_else(|_| "<invalid utf-8 string>"),
                     None => "<empty body>",
                 }, "response received"
             );
@@ -199,7 +197,8 @@ impl Api {
             }
             result
         })
-        .instrument(span)
+        .instrument(trace_span)
+        .instrument(warn_span)
         .await
     }
 }

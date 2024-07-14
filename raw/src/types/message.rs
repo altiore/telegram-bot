@@ -349,25 +349,19 @@ impl Message {
             let entities = raw.entities.unwrap_or_else(Vec::new);
 
             return match text.chars().next() {
-                Some(ch) if ch == '/' => {
-                    make_message(MessageKind::BotCommand {
-                        cmd_str: text,
-                        entities,
-                    })
-                }
-                Some(_) => {
-                    make_message(MessageKind::Text {
-                        data: text,
-                        entities,
-                    })
-                }
-                None => {
-                    make_message(MessageKind::Text {
-                        data: text,
-                        entities,
-                    })
-                }
-            }
+                Some(ch) if ch == '/' => make_message(MessageKind::BotCommand {
+                    cmd_str: text,
+                    entities,
+                }),
+                Some(_) => make_message(MessageKind::Text {
+                    data: text,
+                    entities,
+                }),
+                None => make_message(MessageKind::Text {
+                    data: text,
+                    entities,
+                }),
+            };
         }
 
         maybe_field!(audio, Audio);
@@ -545,25 +539,19 @@ impl ChannelPost {
             let entities = raw.entities.unwrap_or_else(Vec::new);
 
             return match text.chars().next() {
-                Some(ch) if ch == '/' => {
-                    make_message(MessageKind::BotCommand {
-                        cmd_str: text,
-                        entities,
-                    })
-                }
-                Some(_) => {
-                    make_message(MessageKind::Text {
-                        data: text,
-                        entities,
-                    })
-                }
-                None => {
-                    make_message(MessageKind::Text {
-                        data: text,
-                        entities,
-                    })
-                }
-            }
+                Some(ch) if ch == '/' => make_message(MessageKind::BotCommand {
+                    cmd_str: text,
+                    entities,
+                }),
+                Some(_) => make_message(MessageKind::Text {
+                    data: text,
+                    entities,
+                }),
+                None => make_message(MessageKind::Text {
+                    data: text,
+                    entities,
+                }),
+            };
         }
 
         maybe_field!(audio, Audio);
