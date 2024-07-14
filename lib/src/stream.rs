@@ -33,6 +33,8 @@ pub struct UpdatesStream {
     next_poll_id: usize,
 }
 
+const TIMEOUT_DELAY_SECS: u64 = 1500;
+
 impl Stream for UpdatesStream {
     type Item = Result<Update, Error>;
 
@@ -92,7 +94,7 @@ impl Stream for UpdatesStream {
 
         match result {
             Err(err) => {
-                let timeout = ref_mut.timeout + Duration::from_secs(1);
+                let timeout = ref_mut.timeout + Duration::from_millis(TIMEOUT_DELAY_SECS);
                 let mut get_updates = GetUpdates::new();
                 get_updates
                     .offset(ref_mut.last_update + 1)
@@ -106,7 +108,7 @@ impl Stream for UpdatesStream {
                 return Poll::Ready(Some(Err(err)));
             }
             Ok(false) => {
-                let timeout = ref_mut.timeout + Duration::from_secs(1);
+                let timeout = ref_mut.timeout + Duration::from_millis(TIMEOUT_DELAY_SECS);
                 let mut get_updates = GetUpdates::new();
                 get_updates
                     .offset(ref_mut.last_update + 1)

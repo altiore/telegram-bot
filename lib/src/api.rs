@@ -175,9 +175,9 @@ impl Api {
         request: HttpRequest,
     ) -> Result<Resp::Type, Error> {
         let request_id = self.0.next_request_id.fetch_add(1, Ordering::Relaxed);
-        let span = tracing::trace_span!("send_http_request", request_id = request_id);
+        let span = tracing::trace_span!("send_http_request", request_id = request_id, name = %request.name());
         async {
-            tracing::trace!(name = %request.name(), body = %request.body, "sending request");
+            tracing::trace!(body = %request.body, "sending request");
             let http_response = self.0.connector.request(&self.0.token, request).await?;
             tracing::trace!(
                 response = %match http_response.body {
