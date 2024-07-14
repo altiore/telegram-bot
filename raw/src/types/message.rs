@@ -348,13 +348,12 @@ impl Message {
         if let Some(text) = raw.text {
             let entities = raw.entities.unwrap_or_else(Vec::new);
 
-            return match text.chars().next() {
-                Some(ch) if ch == '/' => make_message(MessageKind::BotCommand {
+            return match entities
+                .iter()
+                .find(|e| e.offset == 0 && e.kind == MessageEntityKind::BotCommand)
+            {
+                Some(_) => make_message(MessageKind::BotCommand {
                     cmd_str: text,
-                    entities,
-                }),
-                Some(_) => make_message(MessageKind::Text {
-                    data: text,
                     entities,
                 }),
                 None => make_message(MessageKind::Text {
@@ -538,13 +537,12 @@ impl ChannelPost {
         if let Some(text) = raw.text {
             let entities = raw.entities.unwrap_or_else(Vec::new);
 
-            return match text.chars().next() {
-                Some(ch) if ch == '/' => make_message(MessageKind::BotCommand {
+            return match entities
+                .iter()
+                .find(|e| e.offset == 0 && e.kind == MessageEntityKind::BotCommand)
+            {
+                Some(_) => make_message(MessageKind::BotCommand {
                     cmd_str: text,
-                    entities,
-                }),
-                Some(_) => make_message(MessageKind::Text {
-                    data: text,
                     entities,
                 }),
                 None => make_message(MessageKind::Text {
