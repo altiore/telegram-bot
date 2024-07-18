@@ -95,7 +95,7 @@ impl Api {
         let api = self.clone();
         if let Ok(request) = request.serialize() {
             tokio::spawn(async move {
-                let _ = api.send_http_request::<Req::Response>(request).await;
+                let _ = api.send_http_request::<Req::Response>(request, true).await;
             });
         }
     }
@@ -130,7 +130,7 @@ impl Api {
         async move {
             match timeout(
                 duration,
-                api.send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?),
+                api.send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?, true),
             )
             .await
             {
@@ -165,18 +165,44 @@ impl Api {
         let api = self.clone();
         let request = request.serialize();
         async move {
-            api.send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?)
+            match api
+                .send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?, true)
+                .await
+            {
+                Ok(r) => {
+                    tracing::error!("test error 123321");
+                    Ok(r)
+                }
+                Err(error) => {
+                    tracing::error!(error = %error);
+                    Err(error)
+                }
+            }
+        }
+    }
+
+    pub fn send_no_error_trace<Req: Request>(
+        &self,
+        request: Req,
+    ) -> impl Future<Output = Result<<Req::Response as ResponseType>::Type, Error>> + Send {
+        let api = self.clone();
+        let request = request.serialize();
+        async move {
+            api.send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?, false)
                 .await
         }
     }
 
+    /// Метод нужен для отправки оповещения боту, чтоб не вызывать рекурсию, т.к.
+    /// оповещения могут генерировать новые оповещения
     async fn send_http_request<Resp: ResponseType>(
         &self,
         request: HttpRequest,
+        show_error: bool,
     ) -> Result<Resp::Type, Error> {
         let request_id = self.0.next_request_id.fetch_add(1, Ordering::Relaxed);
-        let trace_span = tracing::trace_span!("send_http_request", request_id = request_id, name = %request.name());
-        let warn_span = tracing::warn_span!("send_http_request", request_id = request_id, name = %request.name(), body = %request.body);
+        let trace_span = tracing::trace_span!("send_http_request.trace", request_id = request_id, name = %request.name());
+        let warn_span = tracing::warn_span!("send_http_request.warn", request_id = request_id, name = %request.name(), body = %request.body);
         async {
             tracing::trace!(body = %request.body, "sending request");
             let http_response = self.0.connector.request(&self.0.token, request).await?;
@@ -193,7 +219,9 @@ impl Api {
         }
         .map(|result| {
             if let Err(ref error) = result {
-                tracing::error!(error = %error);
+                if show_error {
+                    tracing::error!(error = %error);
+                }
             }
             result
         })
