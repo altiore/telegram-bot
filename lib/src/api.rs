@@ -165,19 +165,8 @@ impl Api {
         let api = self.clone();
         let request = request.serialize();
         async move {
-            match api
-                .send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?, true)
+            api.send_http_request::<Req::Response>(request.map_err(ErrorKind::from)?, true)
                 .await
-            {
-                Ok(r) => {
-                    tracing::error!("test error 123321");
-                    Ok(r)
-                }
-                Err(error) => {
-                    tracing::error!(error = %error);
-                    Err(error)
-                }
-            }
         }
     }
 
@@ -217,16 +206,16 @@ impl Api {
             tracing::trace!("response deserialized");
             Ok(response)
         }
-        .map(|result| {
-            if let Err(ref error) = result {
-                if show_error {
-                    tracing::error!(error = %error);
+            .map(|result| {
+                if let Err(ref error) = result {
+                    if show_error {
+                        tracing::error!(error = %error);
+                    }
                 }
-            }
-            result
-        })
-        .instrument(trace_span)
-        .instrument(warn_span)
-        .await
+                result
+            })
+            .instrument(trace_span)
+            .instrument(warn_span)
+            .await
     }
 }
