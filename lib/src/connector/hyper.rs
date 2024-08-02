@@ -13,7 +13,7 @@ use hyper::{
     Method, Request, Uri,
 };
 #[cfg(feature = "rustls")]
-use hyper_rustls::HttpsConnector;
+use hyper_rustls::HttpsConnectorBuilder;
 #[cfg(feature = "openssl")]
 use hyper_tls::HttpsConnector;
 use multipart::client::lazy::Multipart;
@@ -159,7 +159,7 @@ impl<C: Connect + std::fmt::Debug + 'static + Clone + Send + Sync> Connector for
 
 pub fn default_connector() -> Result<Box<dyn Connector>, Error> {
     #[cfg(feature = "rustls")]
-    let connector = HttpsConnector::with_native_roots();
+    let connector = HttpsConnectorBuilder::new().with_native_roots().https_only().enable_http1().enable_http2().build();
 
     #[cfg(feature = "openssl")]
     let connector = HttpsConnector::new();
